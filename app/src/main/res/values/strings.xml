@@ -1,0 +1,12 @@
+<resources>
+    <string name="google_maps_API_key">AIzaSyCyiE8hXs201zEGT2NLhROP6WGdHi1EpcM</string>
+    <string name="app_name">digitalApp</string>
+    <string name="maps">Maps</string>
+    <string name="login">Customer Login</string>
+    <string name="driver">Driver Login</string>
+    <string name="register">Register</string>
+    <string name="user">User Login</string>
+    <string name="matatu">Matatu Login</string>
+    <string name="destination">Destination</string>
+    <string name="title_activity_maps_activityc">Mapc</string>
+</resources>
