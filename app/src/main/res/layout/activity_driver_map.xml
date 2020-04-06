@@ -32,10 +32,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/customerInfo"
-        android:paddingLeft="40sp"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
-        android:visibility="gone">
+        android:visibility="visible">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,10 +70,11 @@
                 android:paddingTop="20sp"/>
         </LinearLayout>
     </LinearLayout>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="picked customer"
-        android:id="@+id/rideStatus"/>
+
+        <Button
+            android:id="@+id/rideStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="picked customer" />
     </LinearLayout>
 </FrameLayout>
