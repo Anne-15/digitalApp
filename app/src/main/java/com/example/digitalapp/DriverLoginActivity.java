@@ -26,7 +26,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class matatuLoginActivity extends AppCompatActivity {
+public class DriverLoginActivity extends AppCompatActivity {
     private EditText mEmail, mPassword;
     private Button mLogin, mRegistration;
     private SignInButton mSignInButton;
@@ -38,7 +38,7 @@ public class matatuLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_matatu_login);
+        setContentView(R.layout.activity_driver_login);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -47,7 +47,7 @@ public class matatuLoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user!=null){
-                    Intent intent = new Intent(matatuLoginActivity.this, DriversMapActivity.class);
+                    Intent intent = new Intent(DriverLoginActivity.this, DriversMapActivity.class);
                     startActivity(intent);
                 }
             }
@@ -83,11 +83,11 @@ public class matatuLoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(matatuLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()){
-                            Toast.makeText(matatuLoginActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverLoginActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
                         }else{
                             String user_id = mAuth.getCurrentUser().getUid();
                             DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("name");
@@ -103,11 +103,11 @@ public class matatuLoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(matatuLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()){
-                            Toast.makeText(matatuLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -120,6 +120,9 @@ public class matatuLoginActivity extends AppCompatActivity {
         super.onStart();
         mAuth.addAuthStateListener(firebaseAuthListener);
     }
+
+    //google sign in option
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -148,12 +151,12 @@ public class matatuLoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent = new Intent(matatuLoginActivity.this,CustomerMapActivity.class);
+                            Intent intent = new Intent(DriverLoginActivity.this,CustomerMapActivity.class);
                             startActivity(intent);
-                            Toast.makeText(matatuLoginActivity.this, "User Logged In Successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverLoginActivity.this, "User Logged In Successfully", Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(matatuLoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverLoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                         }
 
                         // ...

@@ -35,13 +35,15 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".CustomersMapActivity"
+            android:label="@string/title_activity_customers_map"></activity>
+        <activity
             android:name=".DriversMapActivity"
-            android:label="@string/title_activity_drivers_map"></activity>
+            android:label="@string/title_activity_drivers_map" />
         <activity android:name=".DriverSettingsActivity" />
         <activity android:name=".CustomerSettingsActivity" />
-        <activity android:name=".CustomerMapActivity" />
-        <activity android:name=".customerLoginActivity" />
-        <activity android:name=".matatuLoginActivity" />
+        <activity android:name=".CustomerLoginActivity" />
+        <activity android:name=".DriverLoginActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

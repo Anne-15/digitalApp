@@ -2,17 +2,10 @@ package com.example.digitalapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -34,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent;
-                intent = new Intent(MainActivity.this, customerLoginActivity.class);
+                intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
                 startActivity(intent);
                 //finish();
             }
@@ -42,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         rdriverlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, matatuLoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
                 startActivity(intent);
             }
         });
