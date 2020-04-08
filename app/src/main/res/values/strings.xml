@@ -9,4 +9,5 @@
     <string name="matatu">Matatu Login</string>
     <string name="destination">Destination</string>
     <string name="title_activity_maps_activityc">Mapc</string>
+    <string name="title_activity_drivers_map">Map</string>
 </resources>

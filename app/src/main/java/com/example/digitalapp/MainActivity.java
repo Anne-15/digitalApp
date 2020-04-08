@@ -26,17 +26,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button rlogin = findViewById(R.id.btnCustomerLogin);
         Button rdriverlogin = findViewById(R.id.btnDriverLogin);
-        Button btnMap = findViewById(R.id.btnMap);
 //        ImageButton imageButton = findViewById(R.id.userButton);
 
-        btnMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent;
-                intent = new Intent(MainActivity.this, MapsActivityc.class);
-                startActivity(intent);
-            }
-        });
+
 
         rlogin.setOnClickListener(new View.OnClickListener() {
             @Override
