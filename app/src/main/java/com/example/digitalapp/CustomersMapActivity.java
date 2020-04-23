@@ -61,7 +61,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
     LocationRequest mLocationRequest;
 
-    private Button logout,request,setting;
+    private Button logout,request,setting,history;
 
     private LatLng pickupLocation, destinationLatLng;
 
@@ -112,6 +112,8 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
         setting = (Button) findViewById(R.id.settings);
 
+        history = (Button) findViewById(R.id.history);
+
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,6 +152,15 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CustomersMapActivity.this, CustomerSettingsActivity.class);
+                startActivity(intent);
+                return;
+            }
+        });
+
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomersMapActivity.this, HistoryActivity.class);
                 startActivity(intent);
                 return;
             }
@@ -252,6 +263,11 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
     @Override
     public void onLocationChanged(Location location) {
+        mLocation = location;
+        LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
     }
 
@@ -457,5 +473,10 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         mDriverPhone.setText("");
         mDriverCar.setText("");
         mDriverProfileImage.setImageResource(R.drawable.ic_default_user);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 }

@@ -8,10 +8,8 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
 
-    private static final int ERROR_DIALOG_REQUEST = 90001;
-    //private Button rlogin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

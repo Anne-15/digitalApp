@@ -151,7 +151,7 @@ public class DriverLoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent = new Intent(DriverLoginActivity.this,CustomerMapActivity.class);
+                            Intent intent = new Intent(DriverLoginActivity.this,CustomersMapActivity.class);
                             startActivity(intent);
                             Toast.makeText(DriverLoginActivity.this, "User Logged In Successfully", Toast.LENGTH_SHORT).show();
                         } else {

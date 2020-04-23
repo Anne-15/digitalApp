@@ -24,10 +24,15 @@ import com.directions.route.RouteException;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +43,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,6 +53,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +66,12 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     Location mLocation;
 
     LocationRequest mLocationRequest;
+
     private Button logout, settings, rideStatus;
 
     private int status = 0;
+
+    private int DEFAULT_ZOOM = 11;
 
     private String customerId = "", destination;
 
@@ -76,6 +87,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     private TextView mCustomerName, mCustomerPhone, mCustomerDestination;
 
+    private FusedLocationProviderClient fusedLocationClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +98,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.drivermap);
         mapFragment.getMapAsync(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED ) {
@@ -93,6 +106,9 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         }else{
             mapFragment.getMapAsync(this);
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fetchLastLocation();
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
 
@@ -124,6 +140,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
                         break;
                     case 2:
+                        recordRide();
                         endRide();
                         break;
                 }
@@ -155,9 +172,25 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     }
 
 
+    private void fetchLastLocation() {
+        Task<Location> task = fusedLocationClient.getLastLocation();
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null){
+                    mLocation = location;
+                    SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.drivermap);
+                    supportMapFragment.getMapAsync(DriversMapActivity.this);
+                }
+            }
+        });
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED ) {
             buildGoogleApiClient();
@@ -173,6 +206,21 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+    }
+    final int LOCATION_REQUEST_CODE = 1;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case LOCATION_REQUEST_CODE:{
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    mapFragment.getMapAsync(this);
+                }else{
+                    Toast.makeText(this, "Please provide the permissions", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
     }
 
     //disconnect a driver
@@ -348,6 +396,25 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     }
 
+    //get ride history
+    private void recordRide() {
+        String UserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(UserId).child("history");
+        DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId).child("history");
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("history");
+        String requestId = historyRef.push().getKey();
+        driverRef.child(requestId).setValue(true);
+        customerRef.child(requestId).setValue(true);
+
+        HashMap map = new HashMap();
+        map.put("driver", UserId);
+        map.put("customer", customerId);
+        map.put("rating", 0);
+
+        historyRef.child(requestId).updateChildren(map);
+
+    }
+
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
 
@@ -398,7 +465,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -407,22 +474,6 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
             ActivityCompat.requestPermissions(DriversMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
-    }
-
-    final int LOCATION_REQUEST_CODE = 1;
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case LOCATION_REQUEST_CODE:{
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    mapFragment.getMapAsync(this);
-                }else{
-                    Toast.makeText(this, "Please provide the permissions", Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
     }
 
     @Override
@@ -438,10 +489,22 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     @Override
     public void onLocationChanged(Location location) {
         mLocation = location;
+
+        LatLng sydney = new LatLng(-1.3032051,36.707308);
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,11));
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DriversAvailable");
+
+        GeoFire geoFire = new GeoFire(ref);
+        geoFire.setLocation(userID, new GeoLocation(location.getLatitude(), location.getLongitude()));
 
     }
     private void erasePolyline(){
