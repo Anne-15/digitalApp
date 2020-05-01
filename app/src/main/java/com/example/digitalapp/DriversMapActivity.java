@@ -410,9 +410,15 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         map.put("driver", UserId);
         map.put("customer", customerId);
         map.put("rating", 0);
+        map.put("timestamp", getCurrentTimestamp());
 
         historyRef.child(requestId).updateChildren(map);
 
+    }
+
+    private Long getCurrentTimestamp() {
+        Long timestamp = System.currentTimeMillis()/1000;
+        return timestamp;
     }
 
     private List<Polyline> polylines;

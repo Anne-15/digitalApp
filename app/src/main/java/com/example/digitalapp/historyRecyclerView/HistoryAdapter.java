@@ -35,6 +35,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryViewHolders> {
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolders holder, int position) {
         holder.rideId.setText(itemList.get(position).getRideId());
+        holder.time.setText(itemList.get(position).getTime());
     }
 
     @Override
