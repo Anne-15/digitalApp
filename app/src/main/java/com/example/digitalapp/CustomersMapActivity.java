@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,9 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
     private ImageView mDriverProfileImage;
 
     private TextView mDriverName, mDriverPhone, mDriverCar;
+
+    private RatingBar ratingBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +117,8 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         setting = (Button) findViewById(R.id.settings);
 
         history = (Button) findViewById(R.id.history);
+
+        ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -407,6 +413,19 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
                     }
                     if (map.get("profileImageUrl")!=null){
                         Glide.with(getApplication()).load(map.get("profileImageUrl").toString()).into(mDriverProfileImage);
+                    }
+
+                    int ratingSum = 0;
+                    float ratingTotal = 0;
+                    float ratingAverage = 0;
+
+                    for (DataSnapshot child : dataSnapshot.child("rating").getChildren()){
+                        ratingSum = ratingSum + Integer.valueOf(child.getValue().toString());
+                        ratingTotal++;
+                    }
+                    if (ratingTotal != 0 ){
+                        ratingAverage = ratingSum/ratingTotal;
+                        ratingBar.setRating(ratingAverage);
                     }
                 }
             }

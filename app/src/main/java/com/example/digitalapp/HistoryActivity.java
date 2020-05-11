@@ -19,8 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
+
 
 public class HistoryActivity extends AppCompatActivity {
     private String customerOrDriver, userID;
@@ -93,7 +93,7 @@ public class HistoryActivity extends AppCompatActivity {
     private String getDate(Long timestamp) {
         Calendar cal = Calendar.getInstance(Locale.getDefault());
         cal.setTimeInMillis(timestamp*1000);
-        String date = DateFormat.format("dd-MM-yyyy hh:mm",cal).toString();
+        String date = DateFormat.format("MM-dd-yyyy hh:mm",cal).toString();
         return date;
     }
 

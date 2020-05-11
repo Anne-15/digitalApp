@@ -20,7 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="ExtraText,GoogleAppIndexingWarning">
-        <activity android:name=".HistoryActivity"></activity>
+        <service android:name=".OnAppKilled" android:stopWithTask="false"/>
+        <activity android:name=".HistorySingleActivity"></activity>
+        <activity android:name=".HistoryActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

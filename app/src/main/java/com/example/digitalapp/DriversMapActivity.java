@@ -12,8 +12,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,7 +77,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     private String customerId = "", destination;
 
-    private LatLng destinationLatLng;
+    private LatLng destinationLatLng, pickupLatLng;
 
     private Boolean isLoggingOut = false;
 
@@ -88,6 +90,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     private TextView mCustomerName, mCustomerPhone, mCustomerDestination;
 
     private FusedLocationProviderClient fusedLocationClient;
+
+    private Switch workingSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +129,18 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         settings = (Button) findViewById(R.id.settings);
 
         logout = (Button) findViewById(R.id.logoutbtn);
+
+        workingSwitch = (Switch) findViewById(R.id.workingSwitch);
+        workingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    connectDriver();
+                }else{
+                    disconnectDriver();
+                }
+            }
+        });
 
         rideStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,8 +239,17 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         }
     }
 
+    //connect driver
+    private void connectDriver(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(DriversMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
+    }
+
     //disconnect a driver
     private void disconnectDriver(){
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverAvailable");
 
@@ -307,7 +332,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                     if (map.get(1) != null){
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
-                    LatLng pickupLatLng = new LatLng(locationLat,locationLng);
+                    pickupLatLng = new LatLng(locationLat,locationLng);
                     mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("pick up location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
                     getRouteToMarker(pickupLatLng);
                 }
@@ -411,6 +436,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         map.put("customer", customerId);
         map.put("rating", 0);
         map.put("timestamp", getCurrentTimestamp());
+        map.put("destination", destination);
+        map.put("location/from/lat", pickupLatLng.latitude);
 
         historyRef.child(requestId).updateChildren(map);
 
@@ -475,11 +502,6 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(DriversMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
     }
 
     @Override
@@ -518,11 +540,5 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
             line.remove();
         }
         polylines.clear();
-    }
-    public void onStop(){
-        super.onStop();
-        if (!isLoggingOut){
-            disconnectDriver();
-        }
     }
 }

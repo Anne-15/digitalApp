@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         Button rdriverlogin = findViewById(R.id.btnDriverLogin);
 //        ImageButton imageButton = findViewById(R.id.userButton);
 
-
+        startService(new Intent(MainActivity.this, OnAppKilled.class));
 
         rlogin.setOnClickListener(new View.OnClickListener() {
             @Override
