@@ -69,7 +69,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     LocationRequest mLocationRequest;
 
-    private Button logout, settings, rideStatus;
+    private Button logout, settings, rideStatus, history;
 
     private int status = 0;
 
@@ -132,6 +132,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
         logout = (Button) findViewById(R.id.logoutbtn);
 
+        history = (Button) findViewById(R.id.history);
+
         workingSwitch = (Switch) findViewById(R.id.workingSwitch);
         workingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -183,6 +185,15 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
             public void onClick(View v) {
                 Intent intent = new Intent(DriversMapActivity.this, DriverSettingsActivity.class);
                 startActivity(intent);
+            }
+        });
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DriversMapActivity.this, HistoryActivity.class);
+                intent.putExtra("customerOrDriver", "Drivers");
+                startActivity(intent);
+                return;
             }
         });
 

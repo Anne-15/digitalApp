@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.digitalapp.historyRecyclerView.HistoryAdapter;
 import com.example.digitalapp.historyRecyclerView.HistoryObject;
@@ -26,13 +28,21 @@ public class HistoryActivity extends AppCompatActivity {
     private String customerOrDriver, userID;
 
     private RecyclerView recyclerView;
+
     private RecyclerView.Adapter mHistoryAdapter;
+
     private RecyclerView.LayoutManager mHistoryLayoutManager;
+
+    private TextView mbalance;
+
+    private Double balance = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        mbalance = findViewById(R.id.balance);
 
         recyclerView = (RecyclerView) findViewById(R.id.historyRecyclerView);
         recyclerView.setNestedScrollingEnabled(true);
@@ -46,7 +56,9 @@ public class HistoryActivity extends AppCompatActivity {
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         getUserHistoryIds();
 
-
+        if (customerOrDriver.equals("Drivers")){
+            mbalance.setVisibility(View.VISIBLE);
+        }
     }
 
     private void getUserHistoryIds() {
@@ -74,13 +86,24 @@ public class HistoryActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     String rideId = dataSnapshot.getKey();
                     Long timestamp = 0L;
-                    for (DataSnapshot child : dataSnapshot.getChildren()){
-                        if (child.getKey().equals("timestamp")){
-                            timestamp = Long.valueOf(child.getValue().toString());
+                    String distance = "";
+                    Double ridePrice = 0.0;
+
+                    if (dataSnapshot.child("timestamp").getValue() != null){
+                        timestamp = Long.valueOf(dataSnapshot.child("timestamp").getValue().toString());
+                    }
+                    if (dataSnapshot.child("customerPaid").getValue() != null && dataSnapshot.child("driverPaidOut").getValue() == null){
+                        if (dataSnapshot.child("distance").getValue() != null){
+                            distance = dataSnapshot.child("distance").getValue().toString();
+                            ridePrice = (Double.valueOf(distance) * 0.4);
+
+                            balance += ridePrice;
+                            mbalance.setText("Balance: " + String.valueOf(balance) + "Ksh");
                         }
                     }
-                    HistoryObject obj = new HistoryObject(rideId, getDate(timestamp));
-                    resultsHistory.add(obj);
+
+//                    HistoryObject obj = new HistoryObject(rideId, getDate(timestamp));
+//                    resultsHistory.add(obj);
                     mHistoryAdapter.notifyDataSetChanged();
                 }
             }
@@ -90,12 +113,12 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
-    private String getDate(Long timestamp) {
-        Calendar cal = Calendar.getInstance(Locale.getDefault());
-        cal.setTimeInMillis(timestamp*1000);
-        String date = DateFormat.format("MM-dd-yyyy hh:mm",cal).toString();
-        return date;
-    }
+//    private String getDate(Long timestamp) {
+//        Calendar cal = Calendar.getInstance(Locale.getDefault());
+//        cal.setTimeInMillis(timestamp*1000);
+//        String date = DateFormat.format("MM-dd-yyyy hh:mm",cal).toString();
+//        return date;
+//    }
 
     private ArrayList resultsHistory = new ArrayList<HistoryObject>();
 

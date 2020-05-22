@@ -42,6 +42,8 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
@@ -76,6 +78,8 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
     private Double ridePrice;
 
     private Button pay;
+
+    private Boolean customerPaid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,20 +150,23 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
                             }
                         }
 
-                        if (child.getKey().equals("timestamp")){
-                            rideDate.setText(getDate(Long.valueOf(child.getValue().toString())));
-                        }
+//                        if (child.getKey().equals("timestamp")){
+//                            rideDate.setText(getDate(Long.valueOf(child.getValue().toString())));
+//                        }
                         if (child.getKey().equals("rating")){
                             ratingBar.setRating(Integer.valueOf(child.getValue().toString()));
+                        }
+                        if (child.getKey().equals("customerPaid")){
+                            customerPaid = true;
                         }
                         if (child.getKey().equals("distance")){
                             distance = child.getValue().toString();
                             rideDistance.setText(distance.substring(0, Math.min(distance.length(),5))+" km");
                             ridePrice = Double.valueOf(distance) * 0.5;
                         }
-                        if (child.getKey().equals("destination")){
-                            rideLocation.setText(getDate(Long.valueOf(child.getValue().toString())));
-                        }
+//                        if (child.getKey().equals("destination")){
+//                            rideLocation.setText(getDate(Long.valueOf(child.getValue().toString())));
+//                        }
                         if (child.getKey().equals("location")){
                             pickupLatLng = new LatLng(Double.parseDouble(Objects.requireNonNull(child.child("from").child("lat").getValue()).toString()), Double.parseDouble(child.child("from").child("lng").getValue().toString()));
                             destinationLatLng = new LatLng(Double.valueOf(child.child("to").child("lat").getValue().toString()), Double.valueOf(child.child("to").child("lng").getValue().toString()));
@@ -191,6 +198,11 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
                 mDriverRatingDb.child(rideId).setValue(rating);
             }
         });
+        if (customerPaid){
+            pay.setEnabled(false);
+        }else{
+            pay.setEnabled(true);
+        }
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,6 +233,21 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PAYPAL_REQUEST_CODE){
             if (resultCode == Activity.RESULT_OK){
+                PayPalConfiguration confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                if (confirm != null){
+                    try {
+                        JSONObject jsonObject = new JSONObject(confirm.toString());
+
+                        String paymentResponse = jsonObject.getJSONObject("response").getString("state");
+                        if (paymentResponse.equals("approved")){
+                            Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
+                            historyRideInfoDb.child("customerPaid").setValue(true);
+                            pay.setEnabled(false);
+                        }
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
 
             }else{
                 Toast.makeText(this, "Payment unsuccessful", Toast.LENGTH_LONG).show();
@@ -254,12 +281,12 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
         });
     }
 
-    private String getDate(Long timestamp) {
-        Calendar cal = Calendar.getInstance(Locale.getDefault());
-        cal.setTimeInMillis(timestamp*1000);
-        String date = DateFormat.format("MM-dd-yyyy hh:mm",cal).toString();
-        return date;
-    }
+//    private String getDate(Long timestamp) {
+//        Calendar cal = Calendar.getInstance(Locale.getDefault());
+//        cal.setTimeInMillis(timestamp*1000);
+//        String date = DateFormat.format("MM-dd-yyyy hh:mm",cal).toString();
+//        return date;
+//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
