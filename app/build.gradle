@@ -44,6 +44,5 @@ dependencies {
     implementation 'com.firebase:geofire-android:2.1.1'
     implementation 'com.google.android.libraries.places:places:2.2.0'
     implementation 'com.github.jd-alexander:library:1.1.0'
-
-
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
 }

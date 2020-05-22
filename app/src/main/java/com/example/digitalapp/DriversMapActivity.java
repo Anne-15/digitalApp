@@ -93,6 +93,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     private Switch workingSwitch;
 
+    private float rideDistance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -406,6 +408,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(customerId);
         customerId = "";
+        rideDistance = 0;
 
         if (pickupMarker != null){
             pickupMarker.remove();
@@ -438,6 +441,10 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
         map.put("timestamp", getCurrentTimestamp());
         map.put("destination", destination);
         map.put("location/from/lat", pickupLatLng.latitude);
+        map.put("location/from/lng", pickupLatLng.longitude);
+        map.put("location/to/lat", destinationLatLng.latitude);
+        map.put("location/to/lng", destinationLatLng.longitude);
+        map.put("distance", rideDistance);
 
         historyRef.child(requestId).updateChildren(map);
 
@@ -516,24 +523,34 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
 
     @Override
     public void onLocationChanged(Location location) {
-        mLocation = location;
+        if (getApplicationContext() != null){
 
-        LatLng sydney = new LatLng(-1.3032051,36.707308);
-        LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+            if (!customerId.equals("")){
+                rideDistance += mLocation.distanceTo(location)/1000;
+            }
 
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,11));
+            mLocation = location;
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference refAvailable = FirebaseDatabase.getInstance().getReference().child("driversAvailable");
+            DatabaseReference refWorking = FirebaseDatabase.getInstance().getReference().child("driversWorking");
+            GeoFire geoFireAvailable = new GeoFire(refAvailable);
+            GeoFire geoFireWorking = new GeoFire(refWorking);
 
-        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DriversAvailable");
+            switch (customerId){
+                case "":
+                    geoFireWorking.removeLocation(userId);
+                    geoFireAvailable.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
+                    break;
 
-        GeoFire geoFire = new GeoFire(ref);
-        geoFire.setLocation(userID, new GeoLocation(location.getLatitude(), location.getLongitude()));
-
+                default:
+                    geoFireAvailable.removeLocation(userId);
+                    geoFireWorking.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
+            }
+        }
     }
     private void erasePolyline(){
         for (Polyline line: polylines){
