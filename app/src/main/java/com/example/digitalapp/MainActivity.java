@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button rlogin = findViewById(R.id.btnCustomerLogin);
         Button rdriverlogin = findViewById(R.id.btnDriverLogin);
-//        ImageButton imageButton = findViewById(R.id.userButton);
 
         startService(new Intent(MainActivity.this, OnAppKilled.class));
 

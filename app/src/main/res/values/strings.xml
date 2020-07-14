@@ -12,4 +12,6 @@
     <string name="title_activity_drivers_map">Map</string>
     <string name="title_activity_customers_map">Map</string>
     <string name="title_activity_location">Map</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>

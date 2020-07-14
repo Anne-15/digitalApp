@@ -268,6 +268,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                         default:
                             geoFireAvailable.removeLocation(userId);
                             geoFireWorking.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
+                            break;
                     }
                 }
             }
@@ -344,8 +345,8 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                     status = 1;
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickupLocation();
-                    getAssignedCustomerInfo();
                     getAssignedCustomerDestination();
+                    getAssignedCustomerInfo();
 
                 }else {
                     endRide();
@@ -393,7 +394,6 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     private ValueEventListener assignedCustomerPickupLocationRefListener;
     private void getAssignedCustomerPickupLocation() {
         assignedCustomerPickupLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
-
         assignedCustomerPickupLocationRefListener = assignedCustomerPickupLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -421,13 +421,15 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     }
     //get route to marker function
     private void getRouteToMarker(LatLng pickupLatLng) {
-        Routing routing = new Routing.Builder()
-                .travelMode(AbstractRouting.TravelMode.DRIVING)
-                .withListener(this)
-                .alternativeRoutes(true)
-                .waypoints(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()),pickupLatLng)
-                .build();
-        routing.execute();
+        if (pickupLatLng != null && mLocation != null){
+            Routing routing = new Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()),pickupLatLng)
+                    .build();
+            routing.execute();
+        }
     }
 
     //get assigned customer destination
@@ -435,7 +437,6 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
     private void getAssignedCustomerDestination() {
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest");
-
         assignedCustomerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

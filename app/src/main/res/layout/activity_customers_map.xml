@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".CustomersMapActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/customerMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".CustomersMapActivity" />
+        tools:context=".CustomersMapActivity"/>
+
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/history"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:id="@+id/buttons">
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="137dp"
+            android:layout_marginEnd="313dp"
+            android:text="HISTORY" />
 
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/logoutbtn1"
-                android:text="LOGOUT"/>
-
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/history"
-                android:text="HISTORY"/>
-
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/settings"
-                android:text="Settings"
-                android:layout_gravity="right"/>
-
-        </LinearLayout>
-
-        <androidx.cardview.widget.CardView
-            android:layout_below="@+id/buttons"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/settings"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20sp"
-            android:textAlignment="center">
-            <fragment android:id="@+id/autocomplete_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
-        </androidx.cardview.widget.CardView>
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="286dp"
+            android:layout_marginEnd="312dp"
+            android:text="SETTINGS" />
+
+        <Button
+            android:id="@+id/logoutbtn"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="-2dp"
+            android:layout_marginTop="212dp"
+            android:text="LOGOUT" />
+
+        <fragment
+            android:id="@+id/autocomplete_fragment"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="71dp"
+            android:layout_marginEnd="-2dp" />
 
     </RelativeLayout>
 
@@ -63,16 +70,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="bottom"
-        android:visibility="gone">
+        android:layout_gravity="bottom">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/driverInfo"
             android:orientation="horizontal"
-            android:paddingLeft="40sp"
             android:background="@android:color/white"
             android:layout_gravity="bottom"
-            android:id="@+id/driverInfo">
+            android:visibility="visible">
             <ImageView
                 android:layout_width="100sp"
                 android:layout_height="100sp"
@@ -89,7 +95,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/driverName"
                     android:paddingBottom="10sp"
-                    android:paddingTop="20sp"/>
+                    android:paddingTop="20sp"
+                    android:textColor="@android:color/white"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,11 +117,39 @@
                     android:stepSize="0.1"/>
             </LinearLayout>
         </LinearLayout>
-        <Button
+        <LinearLayout
+            android:background="@android:color/white"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/request"
-            android:text="CALL DRIVER"
-            android:layout_gravity="bottom"/>
+            android:layout_height="wrap_content">
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radioGroup"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mini-van"
+                    android:id="@+id/miniVan"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Car"
+                    android:id="@+id/car"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bus"
+                    android:id="@+id/bus"/>
+            </RadioGroup>
+
+            <Button
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="call Uber"
+                android:id="@+id/request"/>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
