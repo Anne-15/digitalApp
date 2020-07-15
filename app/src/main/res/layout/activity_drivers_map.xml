@@ -57,7 +57,7 @@
         android:id="@+id/customerInfo"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
-        android:visibility="visible"
+        android:visibility="gone"
         android:elevation="1dp"
         android:translationZ="1dp">
         <LinearLayout

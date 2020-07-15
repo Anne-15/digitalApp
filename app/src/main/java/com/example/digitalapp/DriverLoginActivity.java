@@ -29,10 +29,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class DriverLoginActivity extends AppCompatActivity {
     private EditText mEmail, mPassword;
-    private TextView mLogin, mRegistration;
-    private SignInButton mSignInButton;
-
-    GoogleSignInClient mGoogleSignInClient;
+    private Button mLogin;
+    private TextView mTextview4;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
@@ -58,26 +56,13 @@ public class DriverLoginActivity extends AppCompatActivity {
         mPassword = (EditText) findViewById(R.id.password);
 
         mLogin = findViewById(R.id.login);
-        mRegistration = findViewById(R.id.registration);
+        mTextview4 = findViewById(R.id.textView4);
 
-
-        mRegistration.setOnClickListener(new View.OnClickListener() {
+        mTextview4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String email = mEmail.getText().toString();
-                final String password = mPassword.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            Toast.makeText(DriverLoginActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
-                        }else{
-                            String user_id = mAuth.getCurrentUser().getUid();
-                            DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("name");
-                            current_user_db.setValue(email);
-                        }
-                    }
-                });
+                Intent intent = new Intent(DriverLoginActivity.this, DriverRegister.class);
+                startActivity(intent);
             }
         });
 
@@ -91,6 +76,10 @@ public class DriverLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()){
                             Toast.makeText(DriverLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(DriverLoginActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(DriverLoginActivity.this, DriversMapActivity.class);
+                            startActivity(intent);
                         }
                     }
                 });
