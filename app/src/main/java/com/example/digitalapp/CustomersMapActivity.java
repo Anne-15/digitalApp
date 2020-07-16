@@ -154,6 +154,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v) {
                 if (requestBol) {
+                    Toast.makeText(CustomersMapActivity.this, "Ride ended", Toast.LENGTH_SHORT).show();
                     endRide();
 
                 } else {
@@ -391,7 +392,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
 
     //get closest driver
-    private double radius = 0.1;
+    private double radius = 1;
     private boolean driverFound = false;
     private String driverFoundID;
     GeoQuery geoQuery;
