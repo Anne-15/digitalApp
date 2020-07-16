@@ -415,7 +415,7 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
                     pickupLatLng = new LatLng(locationLat,locationLng);
-                    mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("pick up location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                    mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("pick up location"));
                     getRouteToMarker(pickupLatLng);
                 }
             }
@@ -456,14 +456,13 @@ public class DriversMapActivity extends FragmentActivity implements RoutingListe
                         mCustomerDestination.setText("Destination--");
                     }
 
-                    Double destinationLat = 0.0;
-                    Double destinationLng = 0.0;
+                    Double destinationLat = -1.286267;
+                    Double destinationLng = 36.884105;
 
                     if (map.get("destinationLat") != null){
-                        destinationLat = Double.valueOf(map.get("DestinationLat").toString());
+                        destinationLatLng = new LatLng(destinationLat,destinationLng);
                     }
                     if (map.get("destinationLng") != null){
-                        destinationLng = Double.valueOf(map.get("DestinationLng").toString());
                         destinationLatLng = new LatLng(destinationLat,destinationLng);
                     }
                 }

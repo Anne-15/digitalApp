@@ -123,7 +123,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
         mapFragment.getMapAsync(this);
 
-        destinationLatLng = new LatLng(0.0, 0.0);
+        destinationLatLng = new LatLng(-1.286267,36.884105);
 
         mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
 
@@ -224,10 +224,10 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
 
         autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS);
 
-        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
-                new LatLng(0.0236, 37.9062),
-                new LatLng(0.1769, 37.9083)));
-        autocompleteFragment.setCountries("IN");
+//        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
+//                new LatLng(0.0236, 37.9062),
+//                new LatLng(0.1769, 37.9083)));
+//        autocompleteFragment.setCountries("IN");
         //specify the type of place data to return
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.NAME));
 
@@ -419,7 +419,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
                                 if (driverFound){
                                     return;
                                 }
-                                if (driverMap.get("service").equals(requestService)){
+//                                if (driverMap.get("service").equals(requestService)){
                                     driverFound = true;
                                     driverFoundID = dataSnapshot.getKey();
 
@@ -437,7 +437,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
                                     getDriverInfo();
                                     getHasRideEnded();
                                     request.setText("Looking for the driver location");
-                                }
+//                                }
                             }
                         }
 
